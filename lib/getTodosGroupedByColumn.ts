@@ -6,24 +6,26 @@ export const getTodosGroupedByColumn = async () => {
     process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID!
   );
   const todos = data.documents;
-
+  
   const columns = todos.reduce((acc, todo) => {
     if (!acc.get(todo.status)) {
       acc.set(todo.status, {
         id: todo.status,
         todos: [],
       });
-
-      acc.get(todo.status)!.todos.push({
-        $id: todo.$id,
-        $createdAt: todo.$createdAt,
-        title: todo.title,
-        status: todo.status,
-        ...(todo.image && { image: JSON.parse(todo.image) }),
-      });
     }
+
+    acc.get(todo.status)!.todos.push({
+      $id: todo.$id,
+      $createdAt: todo.$createdAt,
+      title: todo.title,
+      status: todo.status,
+      ...(todo.image && { image: JSON.parse(todo.image) }),
+    });
     return acc;
   }, new Map<TypedColumn, Column>());
+
+  // console.log(Array.from(columns.entries()));
 
   const columnTypes: TypedColumn[] = ["todo", "inprogress", "done"];
   for (const column of columnTypes) {
